@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unsupervised Anomaly Detection — Industrial Inspection</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header>
+  <h1>🔍 Unsupervised Anomaly Detection</h1>
+  <p class="subtitle">Industrial Inspection — Convolutional Autoencoder</p>
+</header>
+
+<main>
+
+  <!-- STEP 1: Bulk upload of NORMAL images -->
+  <section class="card">
+    <h2>Step 1 — Upload Normal / Good Images (Training Set)</h2>
+    <p class="hint">Upload 1000+ defect-free product images. The model learns
+      what "normal" looks like from these alone — no defect labels needed.</p>
+
+    <div id="train-dropzone" class="dropzone">
+      <p>Drag &amp; drop images or a folder here</p>
+      <p class="or">— or —</p>
+      <label class="file-btn">
+        Choose Files
+        <input type="file" id="train-files" multiple accept="image/*" hidden>
+      </label>
+      <label class="file-btn secondary">
+        Choose Folder
+        <input type="file" id="train-folder" webkitdirectory directory multiple hidden>
+      </label>
+    </div>
+
+    <div class="progress-wrap" id="train-progress-wrap" style="display:none;">
+      <div class="progress-bar"><div id="train-progress-fill"></div></div>
+      <span id="train-progress-text">0 / 0</span>
+    </div>
+
+    <p class="count">Training images stored: <b id="train-count">{{ train_count }}</b></p>
+  </section>
+
+  <!-- STEP 2: Build memory bank -->
+  <section class="card">
+    <h2>Step 2 — Build the Normal-Feature Memory Bank</h2>
+    <p class="hint">Runs your normal images through a pretrained ResNet-18 and
+      stores their visual patch features as the reference for "normal."
+      No epochs needed — this is a single fast pass, not a training loop.</p>
+    <div class="row">
+      <button id="train-btn" class="primary-btn">Train Model</button>
+    </div>
+    <div id="train-status" class="status"></div>
+    <p class="count">Model status:
+      <b id="model-status">{{ "Trained ✅" if model_ready else "Not trained yet" }}</b>
+    </p>
+  </section>
+
+  <!-- STEP 3: Upload TEST images -->
+  <section class="card">
+    <h2>Step 3 — Upload Test Images (Good + Defective Mix)</h2>
+    <div id="test-dropzone" class="dropzone">
+      <p>Drag &amp; drop test images here</p>
+      <p class="or">— or —</p>
+      <label class="file-btn">
+        Choose Files
+        <input type="file" id="test-files" multiple accept="image/*" hidden>
+      </label>
+    </div>
+
+    <div class="progress-wrap" id="test-progress-wrap" style="display:none;">
+      <div class="progress-bar"><div id="test-progress-fill"></div></div>
+      <span id="test-progress-text">0 / 0</span>
+    </div>
+
+    <p class="count">Test images stored: <b id="test-count">{{ test_count }}</b></p>
+  </section>
+
+  <!-- STEP 4: Run detection -->
+  <section class="card">
+    <h2>Step 4 — Detect Anomalies</h2>
+    <div class="row">
+      <label>Sensitivity (lower = stricter, flags more):
+        <input type="range" id="sensitivity" min="50" max="99" value="90">
+        <span id="sensitivity-value">90</span>th percentile
+      </label>
+    </div>
+    <p class="hint">If normal images are being wrongly flagged, raise this number.
+      If defective images are slipping through as normal, lower it — then click
+      Run Detection again (no retraining needed).</p>
+    <button id="detect-btn" class="primary-btn">Run Detection</button>
+    <div id="detect-status" class="status"></div>
+  </section>
+
+  <!-- RESULTS -->
+  <section class="card">
+    <h2>Results</h2>
+    <div id="results-grid" class="results-grid"></div>
+  </section>
+
+  <section class="card danger">
+    <button id="reset-btn" class="danger-btn">Reset Everything</button>
+  </section>
+
+</main>
+
+<footer>
+  <p>CV Mini Project — Unsupervised Anomaly Detection in Industrial Inspection</p>
+</footer>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
