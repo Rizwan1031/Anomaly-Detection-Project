@@ -1,0 +1,10 @@
+Flask==3.0.3
+Werkzeug==3.0.3
+torch==2.3.1
+torchvision==0.18.1
+Pillow==10.4.0
+numpy==1.26.4
+
+# Note: first run of app.py downloads pretrained ResNet-18 weights (~45MB)
+# automatically via torchvision - requires an internet connection ONCE,
+# then it's cached locally (in ~/.cache/torch) and never re-downloaded.
